@@ -1,5 +1,19 @@
+import subprocess
+import sys
+
+
+def start_app():
+    return subprocess.Popen(
+        [sys.executable, "src/app.py"], creationflags=subprocess.CREATE_NEW_CONSOLE
+    )
+
+
 def main():
-    print("Hello from nextop-firewall!")
+    app_proc = start_app()
+    print(f"App started with PID {app_proc.pid}")
+
+    app_proc.wait()
+    print("App process exited.")
 
 
 if __name__ == "__main__":
