@@ -10,12 +10,18 @@ def watchdog(main_pid):
     print(f"Watchdog started with main_pid={main_pid}")
 
     # 운영 체제에 따라 실행할 스크립트 파일을 다르게 지정
-    if platform.system() == "Windows":
+    system = platform.system()
+    if system == "Windows":
         subprocess.run(["set-win-localproxy.bat"])
         unset_command = ["unset-win-localproxy.bat"]
-    else:
-        subprocess.run(["./set-localproxy.sh"])  # Unix 계열에서는 .sh 파일
-        unset_command = ["./unset-localproxy.sh"]
+
+    elif sys.platform == "Darwin":
+        subprocess.run(["set-mac-localproxy.bat"])
+        unset_command = ["unset-mac-localproxy.bat"]
+
+    elif sys.platform == "Linux":
+        subprocess.run(["set-fedora-localproxy.bat"])
+        unset_command = ["unset-fedora-localproxy.bat"]
 
     while True:
         if not psutil.pid_exists(main_pid):
