@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import datetime
-import sys
+from datetime import datetime
 
 from textual.app import App, ComposeResult
 from textual.containers import Vertical
@@ -14,6 +13,8 @@ class FirewallUI(App):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
+        self.logger = controller.logger
+        self.logger.send_ui_log = self.append_log
         self.log_container = Vertical()
         self.command_input = Input(placeholder="명령어를 입력하세요...")
 
@@ -29,16 +30,16 @@ class FirewallUI(App):
         self.command_input.value = ""  # 입력창 초기화
         if cmd:
             self.append_log(f"> {cmd}")  # 입력한 명령어 로그에 출력
-            result = await executeCommand(cmd, self.controller)  # 명령어 처리
-            if result is None:
-                self.append_log(f"알 수 없는 명령어: {cmd}")
-                return
-            self.append_log(result)  # 처리 결과 로그에 출력
+            await executeCommand(cmd, self.controller)  # 명령어 처리
 
     def append_log(
-        self, message: str, datetime: datetime = datetime.datetime.now()
+        self,
+        message: str,
+        now: datetime = None,
     ) -> None:
-        timestamp = datetime.strftime("%H:%M:%S")
+        if now is None:
+            now = datetime.now()
+        timestamp = str(now)[11:]
         log_line = Static(f"[{timestamp}] {message}")
         self.log_container.mount(log_line)  # 로그 메시지 위젯 추가
         self.log_container.scroll_end(animate=False)  # 스크롤을 맨 아래로 이동

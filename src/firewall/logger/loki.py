@@ -1,0 +1,41 @@
+import json
+import time
+import requests
+
+from src import config
+
+
+class Loki:
+    def __init__(self, loki_origin: str = config.LOKI_ORIGIN, log_callback=None):
+        self.loki_url = f"{loki_origin}/loki/api/v1/push"
+        self.log_callback = log_callback
+
+    def send_log(
+        self,
+        labels: dict[str, str],
+        message: str,
+    ):
+        headers = {"Content-Type": "application/json"}
+
+        timestamp_ns = str(time.time_ns())
+
+        # Loki 페이로드 구성
+        loki_payload = {
+            "streams": [
+                {
+                    "stream": labels,
+                    "values": [[timestamp_ns, message]],
+                }
+            ]
+        }
+
+        try:
+            response = requests.post(
+                self.loki_url,
+                headers=headers,
+                data=json.dumps(loki_payload),
+            )
+            response.raise_for_status()
+            print(f"[Loki] Log sent successfully: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"[Loki] Failed to send log: {e}")

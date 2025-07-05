@@ -1,19 +1,20 @@
 import asyncio
 
 from src.firewall.controller import Controller
+from src.firewall.logger.logger import Logger
 from src.firewall.ui import FirewallUI
 
 
 class App:
     async def run(self):
-        # logger = Logger()  # UI는 나중에 연결
+        logger = Logger()
 
         # command_filter = CommandFilter()
         # controller = Controller(logger=logger, command_filter=command_filter)
 
         # UI 생성 및 의존성 주입
         # ui = FirewallUI(controller=controller)
-        controller = Controller()
+        controller = Controller(logger)
 
         # UI 실행
         ui = FirewallUI(controller)
