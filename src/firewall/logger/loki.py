@@ -29,13 +29,9 @@ class Loki:
             ]
         }
 
-        try:
-            response = requests.post(
-                self.loki_url,
-                headers=headers,
-                data=json.dumps(loki_payload),
-            )
-            response.raise_for_status()
-            print(f"[Loki] Log sent successfully: {response.status_code}")
-        except requests.exceptions.RequestException as e:
-            print(f"[Loki] Failed to send log: {e}")
+        response = requests.post(
+            self.loki_url,
+            headers=headers,
+            data=json.dumps(loki_payload),
+        )
+        response.raise_for_status()
