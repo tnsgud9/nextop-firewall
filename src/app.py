@@ -23,6 +23,8 @@ class App:
         # 다른 작업(패킷 캡처 등)을 동시에 실행할 수 있게 함
         asyncio.create_task(ui.run_async())
 
+        await ui.mounted.wait()  # UI 준비 완료 대기
+
         await asyncio.Event().wait()  # 무한 대기 (앱 종료 방지)
 
 

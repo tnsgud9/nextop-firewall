@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime
 
 from textual.app import App, ComposeResult
@@ -17,6 +18,7 @@ class FirewallUI(App):
         self.logger.send_ui_log = self.append_log
         self.log_container = Vertical()
         self.command_input = Input(placeholder="명령어를 입력하세요...")
+        self.mounted = asyncio.Event()
 
     def compose(self) -> ComposeResult:
         yield self.log_container  # 로그 출력 영역
@@ -24,6 +26,7 @@ class FirewallUI(App):
 
     def on_mount(self) -> None:
         self.command_input.focus()
+        self.mounted.set()  # 마운트 완료 시점 알림
 
     async def on_input_submitted(self, message: Input.Submitted) -> None:
         cmd = message.value.strip()  # 입력값 앞뒤 공백 제거
