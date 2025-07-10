@@ -25,9 +25,9 @@ class Logger:
         pass
 
     def info(self, message: str):
-        self.loki.send_log(
-            labels={"log_type": "event", "level": "info"}, message=message
-        )
+        # self.loki.send_log(
+        #     labels={"log_type": "event", "level": "info"}, message=message
+        # )
         self.send_ui_log(message=message)
         pass
 

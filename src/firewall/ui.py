@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import threading
 from datetime import datetime
 
 from textual.app import App, ComposeResult
@@ -15,7 +16,7 @@ class FirewallUI(App):
         super().__init__()
         self.controller = controller
         self.logger = controller.logger
-        self.logger.send_ui_log = self.append_log
+        self.logger.send_ui_log = self.show_log
         self.log_container = Vertical()
         self.command_input = Input(placeholder="명령어를 입력하세요...")
         self.mounted = asyncio.Event()
@@ -34,6 +35,18 @@ class FirewallUI(App):
         if cmd:
             self.append_log(f"> {cmd}")  # 입력한 명령어 로그에 출력
             await executeCommand(cmd, self.controller)  # 명령어 처리
+
+    def show_log(
+        self,
+        message: str,
+        now: datetime = None,
+    ):
+        if threading.get_ident() == self._thread_id:
+            # 현재 스레드 == UI 스레드 → 직접 호출
+            self.append_log(message, now)
+        else:
+            # 다른 스레드에서 호출된 경우만 call_from_thread 사용
+            self.call_from_thread(self.append_log, message, now)
 
     def append_log(
         self,

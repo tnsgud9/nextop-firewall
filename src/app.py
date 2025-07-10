@@ -1,6 +1,7 @@
 import asyncio
 
 from src.firewall.controller import Controller
+from src.firewall.interceptor.scapy_interceptor import ScapyInterceptor
 from src.firewall.logger.logger import Logger
 from src.firewall.ui import FirewallUI
 
@@ -24,6 +25,9 @@ class App:
         asyncio.create_task(ui.run_async())
 
         await ui.mounted.wait()  # UI 준비 완료 대기
+
+        scapy = ScapyInterceptor(logger)
+        scapy.start()
 
         await asyncio.Event().wait()  # 무한 대기 (앱 종료 방지)
 
