@@ -1,6 +1,7 @@
 import asyncio
 
 from src.firewall.controller import Controller
+from src.firewall.interceptor.mitmproxy_interceptor import MitmproxyInterceptor
 from src.firewall.interceptor.scapy_interceptor import ScapyInterceptor
 from src.firewall.logger.logger import Logger
 from src.firewall.ui import FirewallUI
@@ -28,6 +29,10 @@ class App:
 
         scapy = ScapyInterceptor(logger)
         scapy.start()
+
+        # Mitmproxy 인터셉터 시작 (Scapy와 동일한 방식)
+        mitmproxy = MitmproxyInterceptor(logger)
+        mitmproxy.start()
 
         await asyncio.Event().wait()  # 무한 대기 (앱 종료 방지)
 

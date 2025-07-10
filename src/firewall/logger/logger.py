@@ -11,10 +11,9 @@ class Logger:
         self.loki = Loki()
 
     def packet(self, packet: PacketLog):
-        packet_log = f"{json.dumps(asdict(packet), ensure_ascii=False)}"
-        self.loki.send_log(
-            labels={"log_type": "packet", "level": "info"}, message=packet_log
-        )
+        # self.loki.send_log(
+        #     labels={"log_type": "packet", "level": "info"}, message=packet_log
+        # )
         self.send_ui_log(f"Packet: {packet_log}")
         pass
 
