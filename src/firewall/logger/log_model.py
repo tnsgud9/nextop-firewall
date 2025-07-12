@@ -1,6 +1,30 @@
 from dataclasses import dataclass
 
-from src.firewall.logger.log import Log
+
+@dataclass
+class Log:
+    id: str
+    timestamp: str
+    source: str
+    action: str
+    protocol: str
+    reason: str
+
+
+@dataclass
+class PacketLog(Log):
+    id: str
+    timestamp: str
+    source: str
+    action: str
+    protocol: str
+    src_ip: str
+    src_mac: str
+    dst_ip: str
+    dst_mac: str
+    src_port: int
+    dst_port: int
+    reason: str
 
 
 @dataclass
@@ -13,5 +37,5 @@ class HttpLog(Log):
     method: str  # HTTP method (GET, POST, etc.)
     url: str  # Request URL
     reason: str  # Reason or status message (e.g., "OK" for status code 200)
-    headers: dict | None  # HTTP headers (can be None for some cases)
+    headers: str | None  # HTTP headers (can be None for some cases)
     body: str | None  # Request/Response body (can be None if not captured)

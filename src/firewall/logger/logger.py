@@ -1,9 +1,7 @@
 import asyncio
 
-from src.firewall.logger.http_log import HttpLog
-from src.firewall.logger.log import Log
+from src.firewall.logger.log_model import Log, HttpLog, PacketLog
 from src.firewall.logger.loki import Loki
-from src.firewall.logger.packet_log import PacketLog
 
 
 class Logger:

@@ -7,7 +7,7 @@ from mitmproxy import options, http
 from mitmproxy.tools import dump
 
 from src.common.id_utils import generate_log_id
-from src.firewall.logger.http_log import HttpLog
+from src.firewall.logger.log_model import HttpLog
 from src.firewall.logger.logger import Logger
 
 # 차단 도메인 목록
@@ -39,7 +39,7 @@ def parse_http_request(flow: mitmproxy.http.HTTPFlow) -> HttpLog:
         method=flow.request.method,
         url=flow.request.url,
         reason="Captured by mitmproxy",
-        headers=dict(flow.request.headers),
+        headers=str(flow.request.headers),
         body=body,  # 위에서 처리한 body
     )
     return log

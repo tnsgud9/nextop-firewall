@@ -6,8 +6,9 @@ from scapy.layers.inet import UDP
 from scapy.packet import Packet
 
 from src.common.id_utils import generate_log_id
-from src.firewall.logger.packet_log import PacketLog
 from datetime import datetime
+
+from src.firewall.logger.log_model import PacketLog
 
 
 def parse_scapy_packet(packet: Packet) -> PacketLog:
