@@ -1,31 +1,63 @@
-# src/firewall/interceptor/mitmproxy_interceptor.py
 import asyncio
+import json
+from datetime import datetime
+
+import mitmproxy
 from mitmproxy import options, http
 from mitmproxy.tools import dump
+
+from src.common.id_utils import generate_log_id
+from src.firewall.logger.http_log import HttpLog
+from src.firewall.logger.logger import Logger
 
 # 차단 도메인 목록
 BLOCKED_DOMAINS = ["example.com", "www.google.com"]
 
 
+def parse_http_request(flow: mitmproxy.http.HTTPFlow) -> HttpLog:
+    content_type = flow.request.headers.get("Content-Type", "").lower()
+    body = flow.request.content
+
+    # Content-Type에 따라 처리
+    if "application/json" in content_type:
+        try:
+            body = json.loads(body.decode("utf-8", "ignore"))
+        except json.JSONDecodeError:
+            body = "Invalid JSON format"
+    elif "text/" in content_type or "application/x-www-form-urlencoded" in content_type:
+        body = body.decode("utf-8", "ignore")
+    else:
+        body = f"Unsupported content type: {content_type}"
+
+    # HTTPLog 객체 생성
+    log = HttpLog(
+        id=generate_log_id(),
+        timestamp=datetime.fromtimestamp(flow.request.timestamp_start).isoformat(),
+        source="mitmproxy",
+        action="request",
+        protocol=flow.request.scheme,
+        method=flow.request.method,
+        url=flow.request.url,
+        reason="Captured by mitmproxy",
+        headers=dict(flow.request.headers),
+        body=body,  # 위에서 처리한 body
+    )
+    return log
+
+
 class MitmproxyInterceptor:
-    def __init__(self, logger, listen_host="127.0.0.1", listen_port=8080):
+    def __init__(self, logger: Logger, listen_host="127.0.0.1", listen_port=8080):
         self.logger = logger
         self.listen_host = listen_host
         self.listen_port = listen_port
         self._task = None
 
     async def request(self, flow: http.HTTPFlow):
-        summary = f"Request: {flow.request.method} {flow.request.url}"
-        self.logger.info(summary)
-        if flow.request.host in BLOCKED_DOMAINS:
-            flow.response = http.Response.make(
-                403, b"Blocked by firewall", {"Content-Type": "text/plain"}
-            )
-            self.logger.info(f"Blocked: {flow.request.url}")
+        http_log = parse_http_request(flow)
+        self.logger.http(http_log)
 
     async def response(self, flow: http.HTTPFlow):
-        summary = f"Response: {flow.response.status_code} {flow.request.url}"
-        self.logger.info(summary)
+        pass
 
     async def _run(self):
         opts = options.Options(
@@ -40,5 +72,4 @@ class MitmproxyInterceptor:
         await master.run()
 
     def start(self):
-        # asyncio.create_task로 비동기 실행
         self._task = asyncio.create_task(self._run())

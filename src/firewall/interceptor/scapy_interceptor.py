@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 def parse_scapy_packet(packet: Packet) -> PacketLog:
-    timestamp = datetime.now().isoformat()
+    timestamp = datetime.fromtimestamp(packet.time).isoformat()
 
     # 기본값
     protocol = "UNKNOWN"
@@ -65,7 +65,7 @@ def parse_scapy_packet(packet: Packet) -> PacketLog:
 
 
 class ScapyInterceptor:
-    def __init__(self, logger):
+    def __init__(self, logger: object) -> None:
         self.logger = logger
         self.is_running = False
         self.sniffer = AsyncSniffer(prn=self._process_packet, store=False)

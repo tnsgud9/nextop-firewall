@@ -56,7 +56,7 @@ class FirewallUI(App):
         if now is None:
             now = datetime.now()
         timestamp = str(now)[11:]
-        log_line = Static(f"[{timestamp}] {message}")
+        log_line = Static(f"[{timestamp}] {message}", markup=False)
         self.log_container.mount(log_line)  # 로그 메시지 위젯 추가
         self.log_container.scroll_end(animate=False)  # 스크롤을 맨 아래로 이동
 

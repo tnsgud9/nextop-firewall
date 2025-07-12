@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from src.firewall.logger.log import Log
+
 
 @dataclass
-class PacketLog:
+class PacketLog(Log):
     id: str
     timestamp: str
     source: str
