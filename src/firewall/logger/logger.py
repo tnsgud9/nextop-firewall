@@ -17,11 +17,8 @@ class Logger:
         return {
             "log_type": "packet",
             "level": log_level,
-            "src_ip": packet.src_ip,
-            "dst_ip": packet.dst_ip,
+            "source": packet.source,
             "protocol": packet.protocol,
-            "src_port": str(packet.src_port),
-            "dst_port": str(packet.dst_port),
             "action": packet.action,
         }
 
