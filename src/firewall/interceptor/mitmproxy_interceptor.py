@@ -7,7 +7,7 @@ from mitmproxy import options, http
 from mitmproxy.tools import dump
 
 from src.common.id_utils import generate_log_id
-from src.firewall.logger.log_model import HttpLog
+from src.firewall.logger.log_models import HttpLog
 from src.firewall.logger.logger import Logger
 
 # 차단 도메인 목록

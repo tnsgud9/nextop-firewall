@@ -8,7 +8,8 @@ from scapy.packet import Packet
 from src.common.id_utils import generate_log_id
 from datetime import datetime
 
-from src.firewall.logger.log_model import PacketLog
+from src.firewall.logger.log_models import PacketLog
+from src.firewall.logger.logger import Logger
 
 
 def parse_scapy_packet(packet: Packet) -> PacketLog:
@@ -66,7 +67,7 @@ def parse_scapy_packet(packet: Packet) -> PacketLog:
 
 
 class ScapyInterceptor:
-    def __init__(self, logger: object) -> None:
+    def __init__(self, logger: Logger) -> None:
         self.logger = logger
         self.is_running = False
         self.sniffer = AsyncSniffer(prn=self._process_packet, store=False)

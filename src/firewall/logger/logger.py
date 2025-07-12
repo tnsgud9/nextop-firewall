@@ -1,6 +1,4 @@
-import asyncio
-
-from src.firewall.logger.log_model import Log, HttpLog, PacketLog
+from src.firewall.logger.log_models import Log
 from src.firewall.logger.loki import Loki
 
 
@@ -10,26 +8,8 @@ class Logger:
         self.loki = Loki()
 
     def send_log(self, labels: dict, message: str):
-        # asyncio.run(
-        #     self.loki.send_log(labels=labels, message=message)
-        # )  # 비동기 함수 실행
         self.loki.send_log(labels=labels, message=message)
         self.send_ui_log(message)
-
-    # def get_packet_labels(self, packet: PacketLog, log_level: str) -> dict:
-    #     return {
-    #         "log_type": "packet",
-    #         "level": log_level,
-    #         "source": packet.source,
-    #         "protocol": packet.protocol,
-    #         "action": packet.action,
-    #     }
-    #
-    # def get_http_labels(self, http: HttpLog, log_level: str) -> dict:
-    #     return {
-    #         "log_type": "packet",
-    #         "level": log_level,
-    #     }
 
     def get_labels(self, log: Log, log_level: str) -> dict:
         return {
@@ -40,16 +20,16 @@ class Logger:
             "action": log.action,
         }
 
-    def http(self, packet: HttpLog):
-        labels = self.get_labels(packet, log_level="http")
-        self.send_log(labels, str(packet))
+    def http(self, http: Log):
+        labels = self.get_labels(http, log_level="http")
+        self.send_log(labels, str(http))
 
-    def packet(self, packet: PacketLog):
+    def packet(self, packet: Log):
         labels = self.get_labels(packet, log_level="packet")
         self.send_log(labels, str(packet))
 
-    def block(self, packet: PacketLog):
-        labels = self.get_packet_labels(packet, log_level="block")
+    def block(self, packet: Log):
+        labels = self.get_labels(packet, log_level="block")
         self.send_log(labels, str(packet))
 
     def policy(self, message: str):
