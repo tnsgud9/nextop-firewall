@@ -12,7 +12,4 @@ class Controller:
 
     @command("allow")
     async def allow_command(self, arg: str):
-        return {}
-
-    async def unknown_command(self, cmd: str):
-        return f"알 수 없는 명령어: {cmd}"
+        self.logger.info(f"허용 규칙 적용됨: {arg}")
