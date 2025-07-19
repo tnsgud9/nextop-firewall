@@ -1,8 +1,9 @@
 import asyncio
 
-from firewall.ui import FirewallUI
+from src.firewall.ui import FirewallUI
 from src.firewall.controller import Controller
 from src.firewall.interceptor.mitmproxy_interceptor import MitmproxyInterceptor
+from src.firewall.interceptor.pydivert_interceptor import PyDivertInterceptor
 from src.firewall.interceptor.scapy_interceptor import ScapyInterceptor
 from src.firewall.logger.logger import Logger
 from src.firewall.policy.policy import Policy
@@ -20,6 +21,7 @@ class App:
         # UI를 비동기 태스크로 실행하여 이벤트 루프를 점유하지 않고,
         # 다른 작업(패킷 캡처 등)을 동시에 실행할 수 있게 함
         asyncio.create_task(ui.run_async())
+        await ui.mounted.wait()
 
         scapy = ScapyInterceptor(logger, policy)
         scapy.start()
