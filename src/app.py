@@ -30,6 +30,9 @@ class App:
         mitmproxy = MitmproxyInterceptor(logger, policy)
         mitmproxy.start()
 
+        pydivert_interceptor = PyDivertInterceptor(logger, policy)
+        pydivert_interceptor.start()
+
         await asyncio.Event().wait()  # 무한 대기 (앱 종료 방지)
 
 

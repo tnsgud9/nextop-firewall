@@ -9,7 +9,7 @@ class Logger:
 
     def send_log(self, labels: dict, message: str):
         self.loki.send_log(labels=labels, message=message)
-        self.send_ui_log(message)
+        self.send_ui_log(message[:400])
 
     def get_labels(self, log: Log, log_level: str) -> dict:
         return {

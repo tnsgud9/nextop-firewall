@@ -47,6 +47,9 @@ class PyDivertInterceptor:
         # 로그 처리 스레드 (UI/Logger 연동 담당)
         threading.Thread(target=self._process_logs, daemon=True).start()
 
+        # 정책 업데이트를 위한 주기적인 스레드 실행
+        threading.Thread(target=self._periodic_policy_update, daemon=True).start()
+
     def stop(self):
         """interceptor 중지"""
         if not self.is_running:
@@ -88,6 +91,13 @@ class PyDivertInterceptor:
                 log_obj = PacketLog(**data)
                 self.logger.packet(log_obj)
             time.sleep(0.01)
+
+    def _periodic_policy_update(self):
+        """주기적으로 정책을 업데이트하는 함수"""
+        while self.is_running:
+            # 정책이 변경되었으면 업데이트
+            self._send_policy_update()
+            time.sleep(5)  # 5초마다 정책을 갱신
 
     @staticmethod
     def _run_interceptor(policy_queue: Queue, log_queue: Queue, filter_string: str):

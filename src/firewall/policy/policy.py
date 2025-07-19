@@ -16,6 +16,11 @@ class Policy:
         try:
             with open(self.filepath, "r") as f:
                 self.policies = json.load(f)
+                for key, value in self.policies["http"].items():
+                    self.policies["http"][key] = HttpPolicy(**value)
+                for key, value in self.policies["packet"].items():
+                    self.policies["packet"][key] = PacketPolicy(**value)
+
             if not self.policies:  # 파일이 비어있으면
                 self.save()
         except (
@@ -29,7 +34,10 @@ class Policy:
         for policy_type, policies in self.policies.items():
             serializable_policies[policy_type] = {}
             for name, policy in policies.items():
-                serializable_policies[policy_type][name] = policy.__dict__
+                if isinstance(policy, dict):
+                    serializable_policies[policy_type][name] = policy
+                else:
+                    serializable_policies[policy_type][name] = policy.__dict__
         with open(self.filepath, "w") as f:
             json.dump(serializable_policies, f, indent=4)
 
