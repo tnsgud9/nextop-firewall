@@ -10,6 +10,7 @@ from datetime import datetime
 
 from src.firewall.logger.log_models import PacketLog
 from src.firewall.logger.logger import Logger
+from src.firewall.policy.policy import Policy
 
 
 def parse_scapy_packet(packet: Packet) -> PacketLog:
@@ -67,10 +68,11 @@ def parse_scapy_packet(packet: Packet) -> PacketLog:
 
 
 class ScapyInterceptor:
-    def __init__(self, logger: Logger) -> None:
+    def __init__(self, logger: Logger, policy: Policy) -> None:
         self.logger = logger
         self.is_running = False
         self.sniffer = AsyncSniffer(prn=self._process_packet, store=False)
+        self.policies = policy.policies
 
     def start(self):
         # 스니퍼 시작

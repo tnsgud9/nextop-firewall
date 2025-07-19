@@ -9,9 +9,7 @@ from mitmproxy.tools import dump
 from src.common.id_utils import generate_log_id
 from src.firewall.logger.log_models import HttpLog
 from src.firewall.logger.logger import Logger
-
-# 차단 도메인 목록
-BLOCKED_DOMAINS = ["example.com", "www.google.com"]
+from src.firewall.policy.policy import Policy
 
 
 def parse_http_request(flow: mitmproxy.http.HTTPFlow) -> HttpLog:
@@ -46,11 +44,14 @@ def parse_http_request(flow: mitmproxy.http.HTTPFlow) -> HttpLog:
 
 
 class MitmproxyInterceptor:
-    def __init__(self, logger: Logger, listen_host="127.0.0.1", listen_port=8080):
+    def __init__(
+        self, logger: Logger, policy: Policy, listen_host="127.0.0.1", listen_port=8080
+    ):
         self.logger = logger
         self.listen_host = listen_host
         self.listen_port = listen_port
         self._task = None
+        self.policies = policy.policies
 
     async def request(self, flow: http.HTTPFlow):
         http_log = parse_http_request(flow)
