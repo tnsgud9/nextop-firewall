@@ -50,8 +50,8 @@ class MitmproxyInterceptor:
         self.logger = logger
         self.listen_host = listen_host
         self.listen_port = listen_port
-        self._task = None
         self.policies = policy.policies
+        self.is_running = False
 
     async def request(self, flow: http.HTTPFlow):
         http_log = parse_http_request(flow)
@@ -61,6 +61,7 @@ class MitmproxyInterceptor:
         pass
 
     async def _run(self):
+        self.is_running = True
         opts = options.Options(
             listen_host=self.listen_host, listen_port=self.listen_port
         )
@@ -73,4 +74,4 @@ class MitmproxyInterceptor:
         await master.run()
 
     def start(self):
-        self._task = asyncio.create_task(self._run())
+        asyncio.create_task(self._run())
