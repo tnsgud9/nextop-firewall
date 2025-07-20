@@ -55,3 +55,13 @@ class Controller:
     @command("allow")
     async def allow_command(self, arg: str):
         self.logger.info(f"허용 규칙 적용됨: {arg}")
+
+    @command("delete")
+    async def delete_command(self, arg: str):
+        try:
+            arguments = arg.split()
+            policy_type = arguments[0]  # http, packet
+            policy_name = arguments[1]  # 정책 이름
+            self.policy.delete_policy(policy_type, policy_name)
+        except Exception as e:  # 예외가 발생했을 때 실행됨
+            self.logger.info(f"잘못된 정책 유형 입력 : block {arg} : {e}")
