@@ -44,7 +44,7 @@ class FirewallUI(App):
         if now is None:
             now = datetime.now()
         timestamp = str(now)[11:]
-        log_line = Static(f"[{timestamp}] {message}")
+        log_line = Static(f"[{timestamp}] {message}", markup=False)
         self.log_container.mount(log_line)
         self.log_container.scroll_end(animate=False)
 

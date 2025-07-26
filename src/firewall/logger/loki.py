@@ -33,5 +33,6 @@ class Loki:
             self.loki_url,
             headers=headers,
             data=json.dumps(loki_payload),
+            proxies={"http": None, "https": None},  # 프록시 우회
         )
         response.raise_for_status()
