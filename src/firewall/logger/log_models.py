@@ -19,6 +19,8 @@ class PacketLog(Log):
     dst_mac: str
     src_port: int
     dst_port: int
+    src_country: str
+    dst_country: str
 
 
 @dataclass

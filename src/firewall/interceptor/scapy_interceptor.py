@@ -8,6 +8,7 @@ from scapy.packet import Packet
 from src.common.id_utils import generate_log_id
 from datetime import datetime
 
+from src.common.ip_locator import find_country_code
 from src.firewall.logger.log_models import PacketLog
 from src.firewall.logger.logger import Logger
 from src.firewall.policy.policy import Policy
@@ -18,7 +19,7 @@ def parse_scapy_packet(packet: Packet) -> PacketLog:
 
     # 기본값
     protocol = "UNKNOWN"
-    src_ip = dst_ip = src_mac = dst_mac = "N/A"
+    src_ip = dst_ip = src_mac = dst_mac = src_country = dst_country = "N/A"
     src_port = dst_port = -1
 
     if Ether in packet:
@@ -35,6 +36,8 @@ def parse_scapy_packet(packet: Packet) -> PacketLog:
         ip = packet[IP]
         src_ip = ip.src
         dst_ip = ip.dst
+        src_country = find_country_code(src_ip)
+        dst_country = find_country_code(dst_ip)
 
         if TCP in packet:
             protocol = "TCP"
@@ -64,6 +67,8 @@ def parse_scapy_packet(packet: Packet) -> PacketLog:
         src_port=src_port,
         dst_port=dst_port,
         reason="Captured by scapy",
+        dst_country=dst_country,
+        src_country=src_country,
     )
 
 

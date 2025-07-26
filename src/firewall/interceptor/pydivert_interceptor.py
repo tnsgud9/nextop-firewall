@@ -8,6 +8,7 @@ from datetime import datetime
 from multiprocessing import Manager, Value, shared_memory
 
 from src.common.id_utils import generate_log_id
+from src.common.ip_locator import find_country_code
 from src.firewall.logger.log_models import PacketLog
 from src.firewall.logger.logger import Logger
 from src.firewall.policy.policy import Policy
@@ -202,10 +203,13 @@ class PyDivertInterceptor:
         ts = datetime.now().isoformat()
         proto = "UNKNOWN"
         sip = dip = "N/A"
+        src_country = dst_country = "N/A"
         sport = dport = -1
         try:
             if hasattr(packet, "ipv4") and packet.ipv4:
                 sip, dip = packet.src_addr, packet.dst_addr
+                src_country = find_country_code(sip)
+                dst_country = find_country_code(dip)
             if hasattr(packet, "tcp") and packet.tcp:
                 proto, sport, dport = "TCP", packet.src_port, packet.dst_port
             elif hasattr(packet, "udp") and packet.udp:
@@ -227,6 +231,8 @@ class PyDivertInterceptor:
             src_port=sport,
             dst_port=dport,
             reason="Captured by pydivert",
+            dst_country=dst_country,
+            src_country=src_country,
         )
 
     @staticmethod
@@ -238,8 +244,8 @@ class PyDivertInterceptor:
                     reason = pdata.get("reason", f"Matched policy: {policy_name}")
                     if action == "block":
                         return True, f"Blocked by policy '{policy_name}': {reason}"
-                    elif action == "allow":
-                        return False, f"Allowed by policy '{policy_name}': {reason}"
+                    elif action == "capture":
+                        return False, f"Captured by policy '{policy_name}': {reason}"
         except Exception as e:
             print(f"정책 검사 중 오류: {e}")
         return False, "No matching policy - default allow"
