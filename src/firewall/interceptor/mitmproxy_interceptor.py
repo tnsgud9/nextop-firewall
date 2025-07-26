@@ -34,7 +34,7 @@ def parse_http_request(flow: http.HTTPFlow) -> HttpLog:
         id=generate_log_id(),
         timestamp=datetime.fromtimestamp(flow.request.timestamp_start).isoformat(),
         source="mitmproxy",
-        action="request",
+        action="capture",
         protocol=flow.request.scheme,
         method=flow.request.method,
         url=flow.request.url,
